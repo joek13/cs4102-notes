@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="shortcut icon" href="http://joek13.github.io/cs4102-notes/favicon.ico">
+    
+    <link rel="stylesheet" href="/cs4102-notes/css/style.min.css">
+
+    <title>01. Sorting and Some Algorithm Principles</title>
+</head>
+<body><header id="banner">
+    <h2><a href="http://joek13.github.io/cs4102-notes/">Joe Kerrigan&#39;s cs4102 Notes</a></h2>
+    <nav>
+        <ul>
+            
+        </ul>
+    </nav>
+</header>
+<main id="content">
+<article>
+    <header id="post-header">
+        <h1>01. Sorting and Some Algorithm Principles</h1><time>February 2, 2021</time></header><h3 id="introduction-sorting">Introduction: Sorting</h3>
+<p>Given: a sequence of items \(a_0 \dots a_n \),</p>
+<p>Task: reorder sequence to permutation \(a'\) s.t. \( a'_i \le a_{i+1} \) for all pairs.
+(Sorting in &ldquo;non-descending&rdquo; orders.)</p>
+<p>Restriction: we&rsquo;re looking at algorithms that sort using key comparisons. Our <em>basic operation</em> for runtime analysis will be a comparison of two items' key-values.
+Why?</p>
+<ul>
+<li>It&rsquo;s general</li>
+<li>Controls number of other operations</li>
+<li>The logic of the comparison itself could be expensive for, say, long strings</li>
+</ul>
+<h4 id="some-observations">Some observations</h4>
+<ul>
+<li>We assume non-descending order for simplicity</li>
+<li>Our analysis results generalize to other orderings, in practice we can use a comparison function (e.g., Java&rsquo;s <code>Comparable</code>)</li>
+</ul>
+<h3 id="terminology">Terminology</h3>
+<p>Comparison sort: only compares and move items</p>
+<p>Adjacent sort: algorithms that sort by only swapping adjacent elements</p>
+<p>Stable sort: a sorting algorithm is stable ↔ when two items x and y occur in the relative order x,y in the original list AND x == y, then x and y appear in the same relative order in the final sorted list</p>
+<p>In-place sort: the algorithm uses at most \( \Theta(1) \) extra space</p>
+<ul>
+<li>e.g., allocating a second &ldquo;scratch&rdquo; array is not allowed</li>
+</ul>
+<h3 id="why-study-sorting">Why study sorting?</h3>
+<p>It&rsquo;s an important problem, and underpins many other algorithms</p>
+<p>It&rsquo;s also useful for the study of algorithms:</p>
+<ul>
+<li>History of sorting algorithms</li>
+<li>Illustrates various design strategies</li>
+<li>Illustrates analysis methods</li>
+<li>Illustrates how we prove optimality
+<ul>
+<li>Proved in the live section&hellip;</li>
+</ul>
+</li>
+</ul>
+<h2 id="insertion-sort">Insertion sort</h2>
+<p>Strategy:</p>
+<ol>
+<li>First section of list is sorted</li>
+<li>Increase the partial solution by:</li>
+<li>Shifting down next item beyond sorted section down to its proper place in sorted section. (Must shift items to make room for new element.)</li>
+<li>Since one item alone is already sorted, we can put steps 1-3 in a loop going from second to last item.</li>
+</ol>
+<p>Exemplifies a general strategy; we extend a partial solution by increasing its size by one. Some call this &ldquo;<em>decrease and conquer</em>&rdquo;</p>
+<h3 id="proving-it-right-loop-invariants">Proving it right: loop invariants</h3>
+<p>An important technique for proving algorithm correctness.</p>
+<p>Properties that hold true at these points:</p>
+<ul>
+<li>Prior to first iteration (initialization)</li>
+<li>If true before an iteration, then it&rsquo;s true after that iteration (maintenance)</li>
+<li>When loop ends, properties still hold (termination)</li>
+</ul>
+<p>Loop invariant for insertion sort:</p>
+<blockquote>
+<p>For the for-loop governed by index j, the values <code>A[0..j-1]</code> are the elements originally stored in the sublist but in sorted order.</p>
+</blockquote>
+<h3 id="properties-of-insertion-sort">Properties of insertion sort</h3>
+<ul>
+<li>Easy to code</li>
+<li>In-place sort</li>
+<li>What&rsquo;s it like if the list is sorted? Or almost sorted?</li>
+<li>Fine for small inputs. Why? (No recursive overhead)</li>
+<li>Stable</li>
+</ul>
+<h3 id="analysis">Analysis</h3>
+<p>Worst-case:
+$$
+W(n) = \sum_{j=2}{n}{(j-1)} = \frac{1}{2}(n)(n-1) \in \Theta(n^2)
+$$</p>
+<p>Average behavior (messy and ugly):
+$$
+\text{Lotsa math} \approx \frac{1}{4}n^2
+$$</p>
+<p>Best-case:
+$$
+B(n) = \sum_{j=2}^{n}{1} = n-1
+$$
+Interesting note: the best-case behavior does exactly as much work as is necessary to *check* something is sorted&hellip;.🤔</p>
+<h3 id="insertion-sort-best-of-a-breed">Insertion sort: &ldquo;best of a breed&rdquo;</h3>
+<p>We know that insertion sort is one of many quadratic sort algorithms, and that loglinear sorts do exist</p>
+<p>But can we learn something about insertion sort that tells us what it is about the algorithm that &ldquo;keeps&rdquo; it in the slower class.</p>
+<p>Yes: we use a lower-bounds argument for adjacent sort algorithms</p>
+<p>Sorting a list by only swapping adjacent elements is \(\Theta(n^2)\) and can never be \(o(n^2)\)</p>
+<h2 id="mergesort-divide--conquer">Mergesort, Divide &amp; Conquer</h2>
+<p>General and practical sorting algorithm</p>
+<h3 id="divide-and-conquer-strategy">Divide and conquer strategy</h3>
+<p>Has following &ldquo;general structure&rdquo;</p>
+<pre><code>solveProblem(input):
+    if input is small:
+        solve directly (brute force?)
+    else:
+        divide problem into n smaller problems
+        recursively invoke solveProblem on smaller problems
+        combine solutions into bigger solution
+        return bigger solution
+</code></pre><p>Runtime of a divide-and-conquer algorithm is the sum of the times to divide, recursively solve, and combine</p>
+<h3 id="mergesort-as-divide--conquer">Mergesort as Divide &amp; Conquer</h3>
+<ul>
+<li>Base case:
+<ul>
+<li>sublist is size 1, already sorted</li>
+</ul>
+</li>
+<li>Divide:
+<ul>
+<li>Divide list into two sublists of equal size</li>
+</ul>
+</li>
+<li>Conquer:
+<ul>
+<li>Call mergesort recursively on each sublist</li>
+</ul>
+</li>
+<li>Combine:
+<ul>
+<li>Merge sorted left sublist and sorted right sublist</li>
+</ul>
+</li>
+</ul>
+<p>Most of the work gets done in <code>merge()</code>:</p>
+<ul>
+<li>Comparisons, moves</li>
+<li>Most implementations use a &ldquo;scratch array&rdquo;
+<ul>
+<li>An array of size \(n\) which is copied into</li>
+</ul>
+</li>
+</ul>
+<p>The problem for <code>merge()</code>:</p>
+<ul>
+<li>Given two sorted sequences A and B, merge them to create one sorted sequence C</li>
+</ul>
+<p>Strategy:</p>
+<ul>
+<li>C is initially empty</li>
+<li>Look at the first (current) items in A and B</li>
+<li>The smallest of these should become the next item in C</li>
+<li>Go to 2</li>
+<li>When you&rsquo;ve exhausted one list, simply append the other list&rsquo;s outstanding items to C</li>
+</ul>
+<p>Time complexity: \(\Theta(n)\)</p>
+<p>Runtime, T(N):</p>
+<ul>
+<li>Divide the list: \(\Theta(1))\)</li>
+<li>Two recursive sorts: each costs \(T(n/2)\)</li>
+<li>Merge: linear, \(\Theta(n)\)</li>
+</ul>
+<p>Overall cost:
+$$
+T(n) = 2T(n/2) + n = \Theta(nlog(n))
+$$</p>
+<p>Why??? Just wait&hellip;.</p>
+</article>
+
+        </main><footer id="footer">
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</footer></body>
+</html>
