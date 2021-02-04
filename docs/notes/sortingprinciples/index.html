@@ -105,6 +105,14 @@ Interesting note: the best-case behavior does exactly as much work as is necessa
 <p>But can we learn something about insertion sort that tells us what it is about the algorithm that &ldquo;keeps&rdquo; it in the slower class.</p>
 <p>Yes: we use a lower-bounds argument for adjacent sort algorithms</p>
 <p>Sorting a list by only swapping adjacent elements is \(\Theta(n^2)\) and can never be \(o(n^2)\)</p>
+<h4 id="the-lower-bounds-argument-for-adjacent-sorts">The lower-bounds argument for adjacent sorts</h4>
+<p>We define <em>inversions</em> as a pair of elements (not necessarily adjacent) that are misordered.
+Sorting, then, can be viewed as a process to remove inversions.</p>
+<p>Note about adjacent sorts: one swap will only ever remove one inversion.</p>
+<p>Question: what&rsquo;s the maximum number of inversion we can have in a list of size \(n\)?</p>
+<p>Answer: \(\frac{n(n-1)}{2}\)</p>
+<p><strong>Theorem.</strong> Any algorithm that sorts by comparison of keys and removes at most one inversion after each comparison must do at least \(\frac{n(n-1)}{2}\) comparisons in the worst case.</p>
+<p>This theorem applies to any adjacent sort. Result: the optimal worst-case time complexity of an adjacent sort is \(\Theta(n^2)\)</p>
 <h2 id="mergesort-divide--conquer">Mergesort, Divide &amp; Conquer</h2>
 <p>General and practical sorting algorithm</p>
 <h3 id="divide-and-conquer-strategy">Divide and conquer strategy</h3>

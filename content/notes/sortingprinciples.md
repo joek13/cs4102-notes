@@ -93,6 +93,20 @@ Yes: we use a lower-bounds argument for adjacent sort algorithms
 
 Sorting a list by only swapping adjacent elements is \\(\Theta(n^2)\\) and can never be \\(o(n^2)\\)
 
+#### The lower-bounds argument for adjacent sorts
+We define _inversions_ as a pair of elements (not necessarily adjacent) that are misordered.
+Sorting, then, can be viewed as a process to remove inversions.
+
+Note about adjacent sorts: one swap will only ever remove one inversion.
+
+Question: what's the maximum number of inversion we can have in a list of size \\(n\\)?
+
+Answer: \\(\frac{n(n-1)}{2}\\)
+
+**Theorem.** Any algorithm that sorts by comparison of keys and removes at most one inversion after each comparison must do at least \\(\frac{n(n-1)}{2}\\) comparisons in the worst case.
+
+This theorem applies to any adjacent sort. Result: the optimal worst-case time complexity of an adjacent sort is \\(\Theta(n^2)\\)
+
 ## Mergesort, Divide & Conquer
 General and practical sorting algorithm
 
