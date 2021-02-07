@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="shortcut icon" href="http://joek13.github.io/cs4102-notes/favicon.ico">
+    
+    <link rel="stylesheet" href="/cs4102-notes/css/style.min.css">
+
+    <title>02. Recurrence Relations</title>
+</head>
+<body><header id="banner">
+    <h2><a href="http://joek13.github.io/cs4102-notes/">Joe Kerrigan&#39;s cs4102 Notes</a></h2>
+    <nav>
+        <ul>
+            
+        </ul>
+    </nav>
+</header>
+<main id="content">
+<article>
+    <header id="post-header">
+        <h1>02. Recurrence Relations</h1><time>February 7, 2021</time></header><h2 id="solving-recurrence-relations">Solving recurrence relations</h2>
+<p>While working on divide and conquer algorithms like MergeSort, we often see runtime formulae that look like:</p>
+<p>$$
+T(n) = 2T(\frac{n}{2}) + n
+$$</p>
+<p>(Recall that this structure arises from how Mergesort splits its input, does some recursive work on either half, and then does some linear work to merge its results.)</p>
+<p>On Thursday, we claimed that \(T(n) \in O(nlogn)\). Today, we convert this formula to explicit, &ldquo;closed form.&rdquo;</p>
+<p>Four methods for solving:</p>
+<ol>
+<li>Directly solve</li>
+<li>Substitution method</li>
+<li>Recurrence trees</li>
+<li>&ldquo;Master&rdquo; theorem</li>
+</ol>
+<h3 id="directly-solve-unrolling-the-recurrence">Directly solve (unrolling the recurrence)</h3>
+<p>Solve the &ldquo;recursed&rdquo; form by constantly replacing the recursive term into its own value.</p>
+<p>$$
+T(n) = 2T(\frac{n}{2}) + n \<br>
+= 2(2T(\frac{n}{4}) + \frac{n}{2}) + n \<br>
+= 4T(\frac{n}{4}) + 2n \<br>
+= 4(2T(\frac{n}{8}) + \frac{n}{4}) + 2n \<br>
+= 8T(\frac{n}{8}) + 3n \<br>
+= 2^d * T(\frac{n}{2^d}) + dn
+$$</p>
+<p>How many times do we have to unroll for $T$ to just equal 1?</p>
+<p>Solving for \(d]\):
+$$
+d = log_2 (n)
+$$</p>
+<p>In total:
+$$
+T(n) = n * 1 + nlogn
+$$</p>
+<p>Asymptotically, then, \(T(n) \in \Theta(nlogn)\).</p>
+<h3 id="substitution-method">&ldquo;Substitution&rdquo; method</h3>
+<ol>
+<li>Guess the solution</li>
+<li>Inductively prove that recurrence is in the proper order class</li>
+</ol>
+<p>We guess:
+$$
+T(n) \le c * n * logn
+$$</p>
+<p>Choose base case \(n = 2\)</p>
+<p>$$
+T(2) \le c * 2 * log(2)
+4 \le c * 2log(2)
+$$</p>
+<p>This is true for \(c \ge 2\). Base case holds.</p>
+<p><strong>Inductive step:</strong> Show that \(Holds(n) \implies Holds(n + 1)\).</p>
+<p><strong>Conclusion:</strong> Appeal to induction.</p>
+<h3 id="recursion-tree-method">&ldquo;Recursion tree&rdquo; method</h3>
+<ul>
+<li>Draw the method call as a tree of recursive method calls&hellip;</li>
+<li>Figure out how deep the recursion goes, summing the work as you go</li>
+<li>&ldquo;Draw a picture and count&rdquo;</li>
+</ul>
+<p>Not the best method&hellip;. not as rigorous.</p>
+<h3 id="master-theorem-for-dc">&ldquo;Master&rdquo; theorem for D&amp;C</h3>
+<p>Lets you look at a divide and conquer theorem and come up with one quickly.</p>
+<p>Take a recurrence relation:
+$$
+T(n) = a T(n/b) + f(n)
+$$</p>
+<p>f(n) is the &ldquo;extra work&rdquo; to combine recursive solution pieces</p>
+<p>Then let \(k = log(a) / log(b) = log_b(a)\) (critical exponent)</p>
+<p>We use \(n^k\) as a heuristic for the recursive overhead</p>
+<p>Three common cases:</p>
+<ol>
+<li>If \(f(n) \in O(n^{k - \epsilon})\) for some positive \(\epsilon\), then \(T(n) \in \Theta(n^k)\)</li>
+</ol>
+<ul>
+<li>f is &ldquo;strictly faster&rdquo; than the recursion.</li>
+<li>Intuition: if your recursion takes longer than the algorithm itself, the runtime is exactly the recursive overhead.</li>
+</ul>
+<ol start="2">
+<li>If \(f(n) \in \Theta(n^k)\), then \(T(n) \in \Theta(f(n)logn) = \Theta(n^k logn)\)</li>
+</ol>
+<ul>
+<li>Intuition: if your recursion and combining take exactly the same time, both play a factor.</li>
+</ul>
+<ol start="3">
+<li>If \(f(n) \in \Omega(n^{k + \epsilon})\) and \(a * f(n/b) \le c * f(n)\) for some \( c &lt; 1\) and sufficiently large \(n\), then \(T(n) \in \Theta(f(n))\).</li>
+</ol>
+<ul>
+<li><strong>Note!!</strong> The <em>regularity condition</em> says that the total work done at the second level of recursion must be strictly upper-bounded by the work done at the top level times some constant.</li>
+<li>f is &ldquo;strictly slower&rdquo; than the recursion.</li>
+<li>Intuition: if your recursion takes no longer than the algorithm itself, the runtime is exactly the &ldquo;combining&rdquo; overhead.</li>
+</ul>
+<p><strong>Note:</strong> it&rsquo;s possible for none of these cases to hold.</p>
+</article>
+
+        </main><footer id="footer">
+    
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</footer></body>
+</html>
